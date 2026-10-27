@@ -94,6 +94,14 @@ namespace Restaurante.Controllers
 
             if (productos.Count != ids.Count)
                 ModelState.AddModelError(string.Empty, "Algún producto ya no está disponible.");
+            if (modelo.ID_Empleado.HasValue &&
+    !await _context.Empleados.AnyAsync(e =>
+        e.ID_Empleado == modelo.ID_Empleado.Value))
+            {
+                ModelState.AddModelError(
+                    nameof(modelo.ID_Empleado),
+                    "El empleado seleccionado no existe.");
+            }
 
             if (modelo.ID_Cliente.HasValue &&
                 !await _context.Clientes.AnyAsync(c => c.ID_Cliente == modelo.ID_Cliente))
@@ -113,6 +121,7 @@ namespace Restaurante.Controllers
             var pedido = new Pedido
             {
                 ID_Mesa = mesa!.ID_Mesa,
+                ID_Empleado = modelo.ID_Empleado,
                 ID_Cliente = modelo.ID_Cliente,
                 Observacion = string.IsNullOrWhiteSpace(modelo.Observacion) ? null : modelo.Observacion.Trim(),
                 Fecha = DateTime.Now,
@@ -256,15 +265,27 @@ namespace Restaurante.Controllers
                 })
                 .ToListAsync();
 
-            var clientes = await _context.Clientes
-                .OrderBy(c => c.Apellido)
-                .ThenBy(c => c.Nombre)
-                .ToListAsync();
 
-            modelo.Clientes = clientes.Select(c => new SelectListItem(
-                c.NombreCompleto,
-                c.ID_Cliente.ToString(),
-                c.ID_Cliente == modelo.ID_Cliente));
+      var clientes = await _context.Clientes
+    .OrderBy(c => c.Apellido)
+    .ThenBy(c => c.Nombre)
+    .ToListAsync();
+
+modelo.Clientes = clientes.Select(c => new SelectListItem(
+    c.NombreCompleto,
+    c.ID_Cliente.ToString(),
+    c.ID_Cliente == modelo.ID_Cliente));
+
+modelo.Empleados = await _context.Empleados
+    .OrderBy(e => e.Apellido)
+    .ThenBy(e => e.Nombre)
+    .Select(e => new SelectListItem
+    {
+        Value = e.ID_Empleado.ToString(),
+        Text = e.Nombre + " " + e.Apellido + " - " + e.Cargo
+    })
+    .ToListAsync();
+
         }
     }
 }
