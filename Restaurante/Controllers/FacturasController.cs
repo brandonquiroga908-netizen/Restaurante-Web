@@ -75,7 +75,8 @@ public class FacturasController(RestauranteDbContext db, IConfiguration config, 
             await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
             var pedido = await PedidosCompletos.SingleOrDefaultAsync(p => p.ID_Pedido == model.ID_Pedido);
             if (pedido == null) throw new InvalidOperationException("El pedido no existe.");
-            if (pedido.Estado == EstadoPedido.Cancelado) throw new InvalidOperationException("No se puede facturar un pedido cancelado.");
+            if (pedido.Estado != EstadoPedido.Entregado)
+                throw new InvalidOperationException("Solo se pueden facturar pedidos entregados. Entrega el pedido antes de generar la factura.");
             if (await db.Facturas.AnyAsync(f => f.ID_Pedido == pedido.ID_Pedido))
                 throw new InvalidOperationException("Este pedido ya tiene una factura, incluso si fue anulada.");
             if (!Tasa.HasValue) throw new InvalidOperationException("Configura Facturacion:TasaImpuesto antes de emitir facturas.");
@@ -106,14 +107,21 @@ public class FacturasController(RestauranteDbContext db, IConfiguration config, 
     private async Task Preparar(NuevaFacturaViewModel model)
     {
         model.Tasa = Tasa;
+        model.Pedido = null;
         var disponibles = await db.Pedidos.AsNoTracking().Include(p => p.Cliente)
-            .Where(p => p.Estado != EstadoPedido.Cancelado && p.Detalles.Any() && !db.Facturas.Any(f => f.ID_Pedido == p.ID_Pedido))
+            .Where(p => p.Estado == EstadoPedido.Entregado && p.Detalles.Any() && !db.Facturas.Any(f => f.ID_Pedido == p.ID_Pedido))
             .OrderByDescending(p => p.Fecha).ToListAsync();
         model.Pedidos = disponibles.Select(p => new SelectListItem($"Pedido #{p.ID_Pedido} · {p.Cliente?.NombreCompleto ?? "Sin cliente"}", p.ID_Pedido.ToString())).ToList();
         if (model.ID_Pedido > 0)
         {
             if (!disponibles.Any(p => p.ID_Pedido == model.ID_Pedido))
-                ModelState.AddModelError("", "El pedido no está disponible para facturar.");
+            {
+                var estado = await db.Pedidos.AsNoTracking().Where(p => p.ID_Pedido == model.ID_Pedido)
+                    .Select(p => (EstadoPedido?)p.Estado).SingleOrDefaultAsync();
+                ModelState.AddModelError("", estado.HasValue && estado != EstadoPedido.Entregado
+                    ? "Solo se pueden facturar pedidos entregados. Entrega el pedido antes de generar la factura."
+                    : "El pedido no está disponible para facturar: no existe, no tiene productos o ya tiene una factura.");
+            }
             else model.Pedido = await PedidosCompletos.AsNoTracking().SingleAsync(p => p.ID_Pedido == model.ID_Pedido);
         }
         if (model.Pedido != null)
