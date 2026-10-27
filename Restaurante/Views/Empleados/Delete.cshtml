@@ -1,0 +1,17 @@
+@model Restaurante.Models.Empleado
+@{ ViewData["Title"] = "Eliminar empleado"; }
+<div class="container-fluid">
+    <h1 class="fw-bold mb-3">Eliminar empleado</h1>
+    <div class="card border-0 shadow-sm"><div class="card-body p-4">
+        <p>¿Seguro que querés eliminar a <strong>@Model.Nombre @Model.Apellido</strong> (@Model.Cargo)?</p>
+        @if (ViewBag.TienePedidos == true) {
+            <div class="alert alert-warning">Este empleado está asociado a pedidos y no se puede eliminar.</div>
+        } else {
+            <form asp-action="Delete" asp-route-id="@Model.ID_Empleado" method="post">
+                <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            </form>
+        }
+        @if (ViewBag.TienePedidos == true) { <a asp-action="Index" class="btn btn-outline-secondary">Volver</a> }
+    </div></div>
+</div>

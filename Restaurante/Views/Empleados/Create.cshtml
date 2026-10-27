@@ -1,0 +1,18 @@
+@model Restaurante.Models.Empleado
+@{ ViewData["Title"] = "Nuevo empleado"; }
+<div class="container-fluid">
+    <a asp-action="Index" class="text-muted text-decoration-none">← Volver a empleados</a>
+    <h1 class="fw-bold my-3">Nuevo empleado</h1>
+    <div class="card border-0 shadow-sm"><div class="card-body p-4">
+        <form asp-action="Create" method="post">
+            
+            <partial name="_FormEmpleado" model="Model" />
+            <hr class="my-4" />
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                <button class="btn btn-warning fw-semibold" type="submit">Guardar empleado</button>
+            </div>
+        </form>
+    </div></div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

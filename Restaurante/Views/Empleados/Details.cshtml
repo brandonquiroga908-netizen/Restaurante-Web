@@ -1,0 +1,16 @@
+@model Restaurante.Models.Empleado
+@{ ViewData["Title"] = "Detalle de empleado"; }
+<div class="container-fluid">
+    <h1 class="fw-bold mb-3">Detalle de empleado</h1>
+    <div class="card border-0 shadow-sm"><div class="card-body p-4">
+        <dl class="row">
+            <dt class="col-sm-3">ID</dt><dd class="col-sm-9">@Model.ID_Empleado</dd>
+            <dt class="col-sm-3">Nombre</dt><dd class="col-sm-9">@Model.Nombre</dd>
+            <dt class="col-sm-3">Apellido</dt><dd class="col-sm-9">@Model.Apellido</dd>
+            <dt class="col-sm-3">Cargo</dt><dd class="col-sm-9">@Model.Cargo</dd>
+            <dt class="col-sm-3">Teléfono</dt><dd class="col-sm-9">@Model.Telefono</dd>
+        </dl>
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+        <a asp-action="Edit" asp-route-id="@Model.ID_Empleado" class="btn btn-warning">Editar</a>
+    </div></div>
+</div>

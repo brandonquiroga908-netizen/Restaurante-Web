@@ -76,6 +76,38 @@ namespace Restaurante.Migrations
                     b.ToTable("DetallesPedido");
                 });
 
+            modelBuilder.Entity("Restaurante.Models.Empleado", b =>
+                {
+                    b.Property<int>("ID_Empleado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_Empleado"));
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Cargo")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID_Empleado");
+
+                    b.ToTable("Empleados");
+                });
+
             modelBuilder.Entity("Restaurante.Models.Mesa", b =>
                 {
                     b.Property<int>("ID_Mesa")
@@ -123,6 +155,9 @@ namespace Restaurante.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("ID_Empleado")
+                        .HasColumnType("int");
+
                     b.Property<int>("ID_Mesa")
                         .HasColumnType("int");
 
@@ -134,6 +169,8 @@ namespace Restaurante.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("ID_Pedido");
+
+                    b.HasIndex("ID_Empleado");
 
                     b.HasIndex("ID_Mesa");
 
@@ -194,11 +231,18 @@ namespace Restaurante.Migrations
 
             modelBuilder.Entity("Restaurante.Models.Pedido", b =>
                 {
+                    b.HasOne("Restaurante.Models.Empleado", "Empleado")
+                        .WithMany("Pedidos")
+                        .HasForeignKey("ID_Empleado")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Restaurante.Models.Mesa", "Mesa")
                         .WithMany("Pedidos")
                         .HasForeignKey("ID_Mesa")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Empleado");
 
                     b.Navigation("Mesa");
                 });
@@ -212,6 +256,11 @@ namespace Restaurante.Migrations
                         .IsRequired();
 
                     b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("Restaurante.Models.Empleado", b =>
+                {
+                    b.Navigation("Pedidos");
                 });
 
             modelBuilder.Entity("Restaurante.Models.Mesa", b =>
