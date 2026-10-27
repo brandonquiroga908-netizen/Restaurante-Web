@@ -92,6 +92,14 @@ namespace Restaurante.Controllers
 
             if (productos.Count != ids.Count)
                 ModelState.AddModelError(string.Empty, "Algún producto ya no está disponible.");
+            if (modelo.ID_Empleado.HasValue &&
+    !await _context.Empleados.AnyAsync(e =>
+        e.ID_Empleado == modelo.ID_Empleado.Value))
+            {
+                ModelState.AddModelError(
+                    nameof(modelo.ID_Empleado),
+                    "El empleado seleccionado no existe.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -105,6 +113,7 @@ namespace Restaurante.Controllers
             var pedido = new Pedido
             {
                 ID_Mesa = mesa!.ID_Mesa,
+                ID_Empleado = modelo.ID_Empleado,
                 Cliente = string.IsNullOrWhiteSpace(modelo.Cliente) ? null : modelo.Cliente.Trim(),
                 Observacion = string.IsNullOrWhiteSpace(modelo.Observacion) ? null : modelo.Observacion.Trim(),
                 Fecha = DateTime.Now,
@@ -251,6 +260,15 @@ namespace Restaurante.Controllers
             modelo.Clientes = ClientesDatosPrueba.Clientes
                 .Select(c => $"{c.Nombre} {c.Apellido}")
                 .OrderBy(n => n);
+            modelo.Empleados = await _context.Empleados
+    .OrderBy(e => e.Apellido)
+    .ThenBy(e => e.Nombre)
+    .Select(e => new SelectListItem
+    {
+        Value = e.ID_Empleado.ToString(),
+        Text = e.Nombre + " " + e.Apellido + " - " + e.Cargo
+    })
+    .ToListAsync();
         }
     }
 }

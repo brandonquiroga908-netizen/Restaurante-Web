@@ -9,6 +9,11 @@ namespace Restaurante.ViewModels
         [Required(ErrorMessage = "Debes seleccionar una mesa.")]
         [Display(Name = "Mesa")]
         public int? ID_Mesa { get; set; }
+        [Display(Name = "Empleado")]
+        public int? ID_Empleado { get; set; }
+
+        public IEnumerable<SelectListItem> Empleados { get; set; }
+            = Enumerable.Empty<SelectListItem>();
 
         [StringLength(150)]
         [Display(Name = "Cliente (opcional)")]

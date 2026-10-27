@@ -55,6 +55,19 @@
                                     }
                                 </datalist>
                             </div>
+                            <div class="col-md-6">
+                                <label asp-for="ID_Empleado"
+                                       class="form-label fw-semibold"></label>
+
+                                <select asp-for="ID_Empleado"
+                                        asp-items="Model.Empleados"
+                                        class="form-select">
+                                    <option value="">-- Selecciona un empleado --</option>
+                                </select>
+
+                                <span asp-validation-for="ID_Empleado"
+                                      class="text-danger"></span>
+                            </div>
 
                             <div class="col-12">
                                 <label asp-for="Observacion" class="form-label fw-semibold"></label>
