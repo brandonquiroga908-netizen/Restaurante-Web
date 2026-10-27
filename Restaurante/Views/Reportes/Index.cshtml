@@ -1,0 +1,72 @@
+@model Restaurante.ViewModels.ReporteResumenViewModel
+
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Reportes</h1>
+        <p class="text-muted mb-0">
+            Ventas, pedidos y productos vendidos a partir de los datos guardados en SQL Server.
+        </p>
+    </div>
+
+    <partial name="_Navegacion" model="Model.Filtro" />
+    <partial name="_FiltroPeriodo" model="Model.Filtro" />
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-cash-coin"></i> Ventas</div>
+            <div class="kpi-valor">Bs @Model.TotalVentas.ToString("N2")</div>
+            <div class="kpi-detalle">Pedidos entregados del período</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-receipt"></i> Pedidos</div>
+            <div class="kpi-valor">@Model.PedidosRegistrados</div>
+            <div class="kpi-detalle">@Model.PedidosEntregados entregados</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-basket"></i> Unidades</div>
+            <div class="kpi-valor">@Model.UnidadesVendidas</div>
+            <div class="kpi-detalle">Sin contar pedidos cancelados</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-graph-up"></i> Ticket promedio</div>
+            <div class="kpi-valor">Bs @Model.TicketPromedio.ToString("N2")</div>
+            <div class="kpi-detalle">Sobre pedidos entregados</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid mt-4">
+        <a asp-action="Ventas"
+           asp-route-desde="@Model.Filtro.Desde.ToString("yyyy-MM-dd")"
+           asp-route-hasta="@Model.Filtro.Hasta.ToString("yyyy-MM-dd")"
+           class="dashboard-card">
+            <div class="dashboard-card-icon">Bs</div>
+            <h3>Ventas</h3>
+            <p>Total diario de los pedidos entregados.</p>
+            <span class="card-action">Ver ventas →</span>
+        </a>
+
+        <a asp-action="Pedidos"
+           asp-route-desde="@Model.Filtro.Desde.ToString("yyyy-MM-dd")"
+           asp-route-hasta="@Model.Filtro.Hasta.ToString("yyyy-MM-dd")"
+           class="dashboard-card">
+            <div class="dashboard-card-icon">▤</div>
+            <h3>Pedidos</h3>
+            <p>Cantidad, estado y detalle de cada pedido.</p>
+            <span class="card-action">Ver pedidos →</span>
+        </a>
+
+        <a asp-action="Productos"
+           asp-route-desde="@Model.Filtro.Desde.ToString("yyyy-MM-dd")"
+           asp-route-hasta="@Model.Filtro.Hasta.ToString("yyyy-MM-dd")"
+           class="dashboard-card">
+            <div class="dashboard-card-icon">♨</div>
+            <h3>Productos vendidos</h3>
+            <p>Ranking por unidades e importe cobrado.</p>
+            <span class="card-action">Ver productos →</span>
+        </a>
+    </div>
+</div>

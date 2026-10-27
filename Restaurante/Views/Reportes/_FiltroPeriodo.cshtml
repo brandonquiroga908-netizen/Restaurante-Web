@@ -1,0 +1,46 @@
+@model Restaurante.ViewModels.FiltroReporteViewModel
+
+<form method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-sm-6 col-md-3">
+                <label class="form-label" for="desde">Desde</label>
+                <input class="form-control" type="date" id="desde" name="desde"
+                       value="@Model.Desde.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <label class="form-label" for="hasta">Hasta</label>
+                <input class="form-control" type="date" id="hasta" name="hasta"
+                       value="@Model.Hasta.ToString("yyyy-MM-dd")" />
+            </div>
+
+            @if (Model.MostrarEstado)
+            {
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label" for="estado">Estado</label>
+                    <select class="form-select" id="estado" name="estado">
+                        <option value="">Todos</option>
+                        @foreach (var item in Enum.GetValues<EstadoPedido>())
+                        {
+                            if (Model.Estado == item)
+                            {
+                                <option value="@item" selected>@item.NombreVisible()</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item.NombreVisible()</option>
+                            }
+                        }
+                    </select>
+                </div>
+            }
+
+            <div class="col-sm-6 col-md-3">
+                <button type="submit" class="btn btn-warning fw-semibold">
+                    <i class="bi bi-search me-1"></i>
+                    Consultar
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

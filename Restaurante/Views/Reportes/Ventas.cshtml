@@ -1,0 +1,73 @@
+@model Restaurante.ViewModels.ReporteVentasViewModel
+
+@{
+    ViewData["Title"] = "Reporte de ventas";
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Reporte de ventas</h1>
+        <p class="text-muted mb-0">
+            Suma el total de los pedidos entregados. Los pendientes, en preparación y cancelados no entran en este reporte.
+        </p>
+    </div>
+
+    <partial name="_Navegacion" model="Model.Filtro" />
+    <partial name="_FiltroPeriodo" model="Model.Filtro" />
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-cash-coin"></i> Total vendido</div>
+            <div class="kpi-valor">Bs @Model.TotalVentas.ToString("N2")</div>
+            <div class="kpi-detalle">@Model.Filtro.Desde.ToString("dd/MM/yyyy") al @Model.Filtro.Hasta.ToString("dd/MM/yyyy")</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-check2-circle"></i> Pedidos entregados</div>
+            <div class="kpi-valor">@Model.PedidosEntregados</div>
+            <div class="kpi-detalle">Con estado Entregado</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-graph-up"></i> Ticket promedio</div>
+            <div class="kpi-valor">Bs @Model.TicketPromedio.ToString("N2")</div>
+            <div class="kpi-detalle">Total dividido entre pedidos entregados</div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="fw-semibold mb-3">Ventas por día</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Pedidos entregados</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PorDia.Any())
+                        {
+                            @foreach (var dia in Model.PorDia)
+                            {
+                                <tr>
+                                    <td>@dia.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@dia.Pedidos</td>
+                                    <td class="fw-semibold">Bs @dia.Total.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-5">
+                                    No hay pedidos entregados en este período.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
