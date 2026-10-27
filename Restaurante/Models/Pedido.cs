@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Restaurante.Models
@@ -26,6 +26,13 @@ namespace Restaurante.Models
 
         [ForeignKey(nameof(ID_Mesa))]
         public Mesa? Mesa { get; set; }
+
+        // Nullable para mantener los pedidos existentes y evitar romper el flujo actual.
+        [Display(Name = "Empleado")]
+        public int? ID_Empleado { get; set; }
+
+        [ForeignKey(nameof(ID_Empleado))]
+        public Empleado? Empleado { get; set; }
 
         [StringLength(150)]
         [Display(Name = "Cliente")]
