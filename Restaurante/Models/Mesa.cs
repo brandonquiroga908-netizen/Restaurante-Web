@@ -28,6 +28,7 @@ namespace Restaurante.Models
         [Display(Name = "Ubicación")]
         public string? Ubicacion { get; set; }
 
+        [EnumDataType(typeof(EstadoMesa), ErrorMessage = "El estado de la mesa no es válido.")]
         [Display(Name = "Estado")]
         public EstadoMesa Estado { get; set; } = EstadoMesa.Libre;
 

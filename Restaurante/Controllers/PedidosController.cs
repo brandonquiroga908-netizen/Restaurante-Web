@@ -155,12 +155,13 @@ namespace Restaurante.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CambiarEstado(int id, EstadoPedido estado)
         {
-            await using var facturaTx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
-            if (await _context.Facturas.AnyAsync(f => f.ID_Pedido == id))
+            if (!ModelState.IsValid || !Enum.IsDefined(estado))
             {
-                TempData["Error"] = "El pedido tiene una factura y no se puede modificar ni eliminar.";
+                TempData["Error"] = "El estado del pedido no es válido.";
                 return RedirectToAction(nameof(Details), new { id });
             }
+
+            await using var facturaTx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var pedido = await _context.Pedidos
                 .Include(p => p.Mesa)
                 .FirstOrDefaultAsync(p => p.ID_Pedido == id);
@@ -168,9 +169,15 @@ namespace Restaurante.Controllers
             if (pedido == null)
                 return NotFound();
 
-            if (EstaCerrado(pedido.Estado))
+            if (!TransicionValida(pedido.Estado, estado))
             {
-                TempData["Error"] = "Este pedido ya está cerrado y no se puede modificar.";
+                TempData["Error"] = "La transición de estado solicitada no es válida. Solo se pueden avanzar o cancelar pedidos pendientes o en preparación.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            if (estado == EstadoPedido.Cancelado && await _context.Facturas.AnyAsync(f => f.ID_Pedido == id))
+            {
+                TempData["Error"] = "El pedido tiene una factura y no se puede cancelar.";
                 return RedirectToAction(nameof(Details), new { id });
             }
 
@@ -180,7 +187,7 @@ namespace Restaurante.Controllers
                 await LiberarMesaSiCorresponde(pedido);
 
             await _context.SaveChangesAsync();
-                await facturaTx.CommitAsync();
+            await facturaTx.CommitAsync();
 
             TempData["Mensaje"] = $"Pedido #{pedido.ID_Pedido} marcado como \"{estado.NombreVisible()}\".";
             return RedirectToAction(nameof(Details), new { id });
@@ -189,6 +196,12 @@ namespace Restaurante.Controllers
         // Confirmar eliminación
         public async Task<IActionResult> Delete(int id)
         {
+            if (await _context.Facturas.AnyAsync(f => f.ID_Pedido == id))
+            {
+                TempData["Error"] = "El pedido tiene una factura y no se puede eliminar.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Mesa)
                 .Include(p => p.Detalles)
@@ -209,7 +222,7 @@ namespace Restaurante.Controllers
             await using var facturaTx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             if (await _context.Facturas.AnyAsync(f => f.ID_Pedido == id))
             {
-                TempData["Error"] = "El pedido tiene una factura y no se puede modificar ni eliminar.";
+                TempData["Error"] = "El pedido tiene una factura y no se puede eliminar.";
                 return RedirectToAction(nameof(Details), new { id });
             }
             var pedido = await _context.Pedidos
@@ -233,6 +246,13 @@ namespace Restaurante.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        private static bool TransicionValida(EstadoPedido actual, EstadoPedido siguiente) => actual switch
+        {
+            EstadoPedido.Pendiente => siguiente is EstadoPedido.EnPreparacion or EstadoPedido.Entregado or EstadoPedido.Cancelado,
+            EstadoPedido.EnPreparacion => siguiente is EstadoPedido.Entregado or EstadoPedido.Cancelado,
+            _ => false
+        };
 
         private static bool EstaCerrado(EstadoPedido estado) =>
             estado == EstadoPedido.Entregado || estado == EstadoPedido.Cancelado;
