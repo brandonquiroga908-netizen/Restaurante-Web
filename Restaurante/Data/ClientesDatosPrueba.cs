@@ -5,40 +5,8 @@ namespace Restaurante.Data
 {
     public static class ClientesDatosPrueba
     {
-        private static readonly Lazy<List<Cliente>> datos =
-    new Lazy<List<Cliente>>(GenerarClientes);
-
-        public static IReadOnlyList<Cliente> Clientes
-        {
-            get
-            {
-                var lista = datos.Value;
-
-                lock (lista)
-                {
-                    return lista.ToList();
-                }
-            }
-        }
-
-        public static bool Eliminar(int id)
-        {
-            var lista = datos.Value;
-
-            lock (lista)
-            {
-                var cliente = lista.FirstOrDefault(c => c.Id == id);
-
-                if (cliente == null)
-                {
-                    return false;
-                }
-
-                return lista.Remove(cliente);
-            }
-        }
-
-        private static List<Cliente> GenerarClientes()
+        // Solo para cargar la tabla la primera vez. Después se leen de SQL Server.
+        public static List<Cliente> Generar()
         {
             var apellidos = new[]
             {
@@ -49,11 +17,10 @@ namespace Restaurante.Data
                 "Torrez", "Arce", "Salazar", "Romero"
             };
 
-            int id = 1;
+            int secuencia = 1;
 
             var generador = new Faker<Cliente>("es")
                 .UseSeed(12345)
-                .RuleFor(c => c.Id, f => id++)
                 .RuleFor(c => c.Nombre, f => f.Name.FirstName())
                 .RuleFor(c => c.Apellido, f =>
                     $"{f.PickRandom(apellidos)} {f.PickRandom(apellidos)}")
@@ -66,7 +33,8 @@ namespace Restaurante.Data
                         c.Nombre,
                         c.Apellido.Replace(" ", ""),
                         "gmail.com",
-                        c.Id.ToString()));
+                        (secuencia++).ToString()))
+                .RuleFor(c => c.Direccion, f => f.Address.StreetAddress());
 
             return generador.Generate(100);
         }

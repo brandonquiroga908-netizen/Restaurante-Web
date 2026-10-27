@@ -47,6 +47,7 @@ namespace Restaurante.Controllers
                 ProductoMasVendidoCantidad = masVendido?.Cantidad ?? 0,
                 UltimosPedidos = await _context.Pedidos
                     .Include(p => p.Mesa)
+                    .Include(p => p.Cliente)
                     .OrderByDescending(p => p.Fecha)
                     .Take(5)
                     .ToListAsync()

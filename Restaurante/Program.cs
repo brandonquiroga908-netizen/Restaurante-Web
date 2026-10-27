@@ -32,4 +32,16 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<RestauranteDbContext>();
+    db.Database.Migrate();
+
+    if (!db.Clientes.Any())
+    {
+        db.Clientes.AddRange(ClientesDatosPrueba.Generar());
+        db.SaveChanges();
+    }
+}
+
 app.Run();

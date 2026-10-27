@@ -27,16 +27,24 @@ namespace Restaurante.Models
         [ForeignKey(nameof(ID_Mesa))]
         public Mesa? Mesa { get; set; }
 
-        // Nullable para mantener los pedidos existentes y evitar romper el flujo actual.
-        [Display(Name = "Empleado")]
-        public int? ID_Empleado { get; set; }
+// Empleado que atiende el pedido
+[Display(Name = "Empleado")]
+public int? ID_Empleado { get; set; }
 
-        [ForeignKey(nameof(ID_Empleado))]
-        public Empleado? Empleado { get; set; }
+[ForeignKey(nameof(ID_Empleado))]
+public Empleado? Empleado { get; set; }
 
-        [StringLength(150)]
+// Cliente asociado al pedido
+[Display(Name = "Cliente")]
+public int? ID_Cliente { get; set; }
+
+[ForeignKey(nameof(ID_Cliente))]
+public Cliente? Cliente { get; set; }
         [Display(Name = "Cliente")]
-        public string? Cliente { get; set; }
+        public int? ID_Cliente { get; set; }
+
+        [ForeignKey(nameof(ID_Cliente))]
+        public Cliente? Cliente { get; set; }
 
         [StringLength(250)]
         [Display(Name = "Observación")]

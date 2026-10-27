@@ -1,0 +1,19 @@
+@model Restaurante.ViewModels.FiltroReporteViewModel
+
+@{
+    var accion = ViewContext.RouteData.Values["action"]?.ToString();
+    string Activo(string nombre) => accion == nombre ? "activo" : "";
+    var desde = Model.Desde.ToString("yyyy-MM-dd");
+    var hasta = Model.Hasta.ToString("yyyy-MM-dd");
+}
+
+<div class="filtro-estados mb-3">
+    <a asp-action="Index" asp-route-desde="@desde" asp-route-hasta="@hasta"
+       class="filtro-estado @Activo("Index")">Resumen</a>
+    <a asp-action="Ventas" asp-route-desde="@desde" asp-route-hasta="@hasta"
+       class="filtro-estado @Activo("Ventas")">Ventas</a>
+    <a asp-action="Pedidos" asp-route-desde="@desde" asp-route-hasta="@hasta"
+       class="filtro-estado @Activo("Pedidos")">Pedidos</a>
+    <a asp-action="Productos" asp-route-desde="@desde" asp-route-hasta="@hasta"
+       class="filtro-estado @Activo("Productos")">Productos vendidos</a>
+</div>

@@ -15,9 +15,9 @@ namespace Restaurante.ViewModels
         public IEnumerable<SelectListItem> Empleados { get; set; }
             = Enumerable.Empty<SelectListItem>();
 
-        [StringLength(150)]
-        [Display(Name = "Cliente (opcional)")]
-        public string? Cliente { get; set; }
+        [Required(ErrorMessage = "Debes seleccionar un cliente.")]
+        [Display(Name = "Cliente")]
+        public int? ID_Cliente { get; set; }
 
         [StringLength(250)]
         [Display(Name = "Observación")]
@@ -28,7 +28,7 @@ namespace Restaurante.ViewModels
         // Listas para los <select> y el cálculo del total en pantalla
         public IEnumerable<SelectListItem> Mesas { get; set; } = Enumerable.Empty<SelectListItem>();
         public List<ProductoOpcion> Productos { get; set; } = new();
-        public IEnumerable<string> Clientes { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<SelectListItem> Clientes { get; set; } = Enumerable.Empty<SelectListItem>();
     }
 
     public class LineaPedidoViewModel

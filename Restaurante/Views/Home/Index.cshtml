@@ -147,7 +147,7 @@
                                 </td>
                                 <td>@pedido.Fecha.ToString("dd/MM HH:mm")</td>
                                 <td>Mesa @pedido.Mesa?.Numero</td>
-                                <td>@(pedido.Cliente ?? "Sin cliente")</td>
+                                <td>@(pedido.Cliente?.NombreCompleto ?? "Sin cliente")</td>
                                 <td class="fw-semibold">Bs @pedido.Total.ToString("N2")</td>
                                 <td><partial name="~/Views/Pedidos/_EstadoBadge.cshtml" model="pedido.Estado" /></td>
                             </tr>

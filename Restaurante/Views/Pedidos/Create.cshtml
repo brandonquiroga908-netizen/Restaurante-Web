@@ -14,7 +14,7 @@
         </a>
 
         <h1 class="fw-bold mt-3 mb-1">Nuevo pedido</h1>
-        <p class="text-muted mb-0">Elige la mesa y agrega los productos del pedido.</p>
+        <p class="text-muted mb-0">Elige la mesa, el cliente y agrega los productos del pedido.</p>
     </div>
 
     <form asp-action="Create" method="post" id="form-pedido">
@@ -45,15 +45,11 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label asp-for="Cliente" class="form-label fw-semibold"></label>
-                                <input asp-for="Cliente" class="form-control" list="lista-clientes"
-                                       placeholder="Escribe para buscar un cliente" autocomplete="off" />
-                                <datalist id="lista-clientes">
-                                    @foreach (var c in Model.Clientes)
-                                    {
-                                        <option value="@c"></option>
-                                    }
-                                </datalist>
+                                <label asp-for="ID_Cliente" class="form-label fw-semibold"></label>
+                                <select asp-for="ID_Cliente" asp-items="Model.Clientes" class="form-select">
+                                    <option value="">-- Selecciona un cliente --</option>
+                                </select>
+                                <span asp-validation-for="ID_Cliente" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="ID_Empleado"

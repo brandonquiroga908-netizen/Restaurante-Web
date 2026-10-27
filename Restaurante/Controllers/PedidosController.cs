@@ -22,6 +22,7 @@ namespace Restaurante.Controllers
         {
             var consulta = _context.Pedidos
                 .Include(p => p.Mesa)
+                .Include(p => p.Cliente)
                 .Include(p => p.Detalles)
                 .AsQueryable();
 
@@ -41,6 +42,7 @@ namespace Restaurante.Controllers
         {
             var pedido = await _context.Pedidos
                 .Include(p => p.Mesa)
+                .Include(p => p.Cliente)
                 .Include(p => p.Detalles)
                     .ThenInclude(d => d.Producto)
                 .FirstOrDefaultAsync(p => p.ID_Pedido == id);
@@ -101,6 +103,12 @@ namespace Restaurante.Controllers
                     "El empleado seleccionado no existe.");
             }
 
+            if (modelo.ID_Cliente.HasValue &&
+                !await _context.Clientes.AnyAsync(c => c.ID_Cliente == modelo.ID_Cliente))
+            {
+                ModelState.AddModelError(nameof(modelo.ID_Cliente), "El cliente seleccionado no existe.");
+            }
+
             if (!ModelState.IsValid)
             {
                 if (!modelo.Lineas.Any())
@@ -114,7 +122,7 @@ namespace Restaurante.Controllers
             {
                 ID_Mesa = mesa!.ID_Mesa,
                 ID_Empleado = modelo.ID_Empleado,
-                Cliente = string.IsNullOrWhiteSpace(modelo.Cliente) ? null : modelo.Cliente.Trim(),
+                ID_Cliente = modelo.ID_Cliente,
                 Observacion = string.IsNullOrWhiteSpace(modelo.Observacion) ? null : modelo.Observacion.Trim(),
                 Fecha = DateTime.Now,
                 Estado = EstadoPedido.Pendiente
@@ -257,10 +265,18 @@ namespace Restaurante.Controllers
                 })
                 .ToListAsync();
 
-            modelo.Clientes = ClientesDatosPrueba.Clientes
-                .Select(c => $"{c.Nombre} {c.Apellido}")
-                .OrderBy(n => n);
-            modelo.Empleados = await _context.Empleados
+
+      var clientes = await _context.Clientes
+    .OrderBy(c => c.Apellido)
+    .ThenBy(c => c.Nombre)
+    .ToListAsync();
+
+modelo.Clientes = clientes.Select(c => new SelectListItem(
+    c.NombreCompleto,
+    c.ID_Cliente.ToString(),
+    c.ID_Cliente == modelo.ID_Cliente));
+
+modelo.Empleados = await _context.Empleados
     .OrderBy(e => e.Apellido)
     .ThenBy(e => e.Nombre)
     .Select(e => new SelectListItem
@@ -269,6 +285,7 @@ namespace Restaurante.Controllers
         Text = e.Nombre + " " + e.Apellido + " - " + e.Cargo
     })
     .ToListAsync();
+
         }
     }
 }

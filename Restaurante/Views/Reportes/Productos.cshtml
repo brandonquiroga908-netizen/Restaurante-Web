@@ -1,0 +1,69 @@
+@model Restaurante.ViewModels.ReporteProductosViewModel
+
+@{
+    ViewData["Title"] = "Productos vendidos";
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Productos vendidos</h1>
+        <p class="text-muted mb-0">
+            Unidades e importe según el precio guardado en cada detalle. No incluye pedidos cancelados.
+        </p>
+    </div>
+
+    <partial name="_Navegacion" model="Model.Filtro" />
+    <partial name="_FiltroPeriodo" model="Model.Filtro" />
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-basket"></i> Unidades</div>
+            <div class="kpi-valor">@Model.UnidadesVendidas</div>
+            <div class="kpi-detalle">@Model.Productos.Count productos distintos</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-cash-coin"></i> Importe</div>
+            <div class="kpi-valor">Bs @Model.TotalVendido.ToString("N2")</div>
+            <div class="kpi-detalle">Cantidad por precio unitario del pedido</div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Unidades</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Productos.Any())
+                        {
+                            @foreach (var producto in Model.Productos)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@producto.Nombre</td>
+                                    <td>@producto.Categoria</td>
+                                    <td>@producto.Cantidad</td>
+                                    <td class="fw-semibold">Bs @producto.Total.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5">
+                                    No hay productos vendidos en este período.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

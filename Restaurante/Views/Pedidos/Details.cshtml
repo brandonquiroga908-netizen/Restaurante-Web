@@ -50,7 +50,7 @@
                     <h5 class="fw-semibold mb-3">Información</h5>
                     <dl class="mb-0">
                         <dt>Cliente</dt>
-                        <dd>@(Model.Cliente ?? "Sin cliente")</dd>
+                        <dd>@(Model.Cliente?.NombreCompleto ?? "Sin cliente")</dd>
                         <dt>Observación</dt>
                         <dd class="mb-0">@(Model.Observacion ?? "Ninguna")</dd>
                     </dl>

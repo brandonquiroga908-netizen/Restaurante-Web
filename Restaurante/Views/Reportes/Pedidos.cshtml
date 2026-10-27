@@ -1,0 +1,91 @@
+@model Restaurante.ViewModels.ReportePedidosViewModel
+
+@{
+    ViewData["Title"] = "Reporte de pedidos";
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Reporte de pedidos</h1>
+        <p class="text-muted mb-0">
+            Pedidos registrados en el período, con mesa, cliente, productos y estado.
+        </p>
+    </div>
+
+    <partial name="_Navegacion" model="Model.Filtro" />
+    <partial name="_FiltroPeriodo" model="Model.Filtro" />
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-receipt"></i> Pedidos del filtro</div>
+            <div class="kpi-valor">@Model.TotalPedidos</div>
+            <div class="kpi-detalle">@Model.Filtro.Desde.ToString("dd/MM/yyyy") al @Model.Filtro.Hasta.ToString("dd/MM/yyyy")</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label"><i class="bi bi-cash"></i> Importe registrado</div>
+            <div class="kpi-valor">Bs @Model.TotalRegistrado.ToString("N2")</div>
+            <div class="kpi-detalle">Suma del total de los pedidos listados</div>
+        </div>
+    </div>
+
+    @if (Model.PorEstado.Any())
+    {
+        <div class="filtro-estados my-4">
+            @foreach (var item in Model.PorEstado)
+            {
+                <span class="filtro-estado">
+                    <partial name="~/Views/Pedidos/_EstadoBadge.cshtml" model="item.Estado" />
+                    @item.Cantidad · Bs @item.Total.ToString("N2")
+                </span>
+            }
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>N.º</th>
+                            <th>Fecha</th>
+                            <th>Mesa</th>
+                            <th>Cliente</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Pedidos.Any())
+                        {
+                            @foreach (var pedido in Model.Pedidos)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="Pedidos" asp-action="Details" asp-route-id="@pedido.ID_Pedido"
+                                           class="enlace-dorado fw-semibold">#@pedido.ID_Pedido</a>
+                                    </td>
+                                    <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>Mesa @pedido.Mesa?.Numero</td>
+                                    <td>@(pedido.Cliente?.NombreCompleto ?? "Sin cliente")</td>
+                                    <td>@pedido.Detalles.Sum(d => d.Cantidad)</td>
+                                    <td class="fw-semibold">Bs @pedido.Total.ToString("N2")</td>
+                                    <td><partial name="~/Views/Pedidos/_EstadoBadge.cshtml" model="pedido.Estado" /></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    No hay pedidos para el período y el estado elegidos.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
