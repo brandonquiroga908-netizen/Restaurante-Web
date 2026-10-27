@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Restaurante.Models
 {
     public class Cliente
     {
-        public int Id { get; set; }
+        [Key]
+        public int ID_Cliente { get; set; }
 
         [Required(ErrorMessage = "Ingresa el nombre.")]
         [StringLength(100, ErrorMessage = "El nombre admite hasta 100 caracteres.")]
@@ -24,5 +26,15 @@ namespace Restaurante.Models
         [EmailAddress(ErrorMessage = "Ingresa un correo válido.")]
         [StringLength(150, ErrorMessage = "El correo admite hasta 150 caracteres.")]
         public string Correo { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Ingresa la dirección.")]
+        [StringLength(200, ErrorMessage = "La dirección admite hasta 200 caracteres.")]
+        [Display(Name = "Dirección")]
+        public string Direccion { get; set; } = string.Empty;
+
+        public ICollection<Pedido> Pedidos { get; set; } = new List<Pedido>();
+
+        [NotMapped]
+        public string NombreCompleto => $"{Nombre} {Apellido}";
     }
 }

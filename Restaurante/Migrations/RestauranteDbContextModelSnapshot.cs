@@ -47,6 +47,43 @@ namespace Restaurante.Migrations
                     b.ToTable("Categorias");
                 });
 
+            modelBuilder.Entity("Restaurante.Models.Cliente", b =>
+                {
+                    b.Property<int>("ID_Cliente")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_Cliente"));
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID_Cliente");
+
+                    b.ToTable("Clientes");
+                });
+
             modelBuilder.Entity("Restaurante.Models.DetallePedido", b =>
                 {
                     b.Property<int>("ID_Detalle")
@@ -113,15 +150,14 @@ namespace Restaurante.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_Pedido"));
 
-                    b.Property<string>("Cliente")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("ID_Cliente")
+                        .HasColumnType("int");
 
                     b.Property<int>("ID_Mesa")
                         .HasColumnType("int");
@@ -134,6 +170,8 @@ namespace Restaurante.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("ID_Pedido");
+
+                    b.HasIndex("ID_Cliente");
 
                     b.HasIndex("ID_Mesa");
 
@@ -194,11 +232,18 @@ namespace Restaurante.Migrations
 
             modelBuilder.Entity("Restaurante.Models.Pedido", b =>
                 {
+                    b.HasOne("Restaurante.Models.Cliente", "Cliente")
+                        .WithMany("Pedidos")
+                        .HasForeignKey("ID_Cliente")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Restaurante.Models.Mesa", "Mesa")
                         .WithMany("Pedidos")
                         .HasForeignKey("ID_Mesa")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Cliente");
 
                     b.Navigation("Mesa");
                 });
@@ -212,6 +257,11 @@ namespace Restaurante.Migrations
                         .IsRequired();
 
                     b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("Restaurante.Models.Cliente", b =>
+                {
+                    b.Navigation("Pedidos");
                 });
 
             modelBuilder.Entity("Restaurante.Models.Mesa", b =>

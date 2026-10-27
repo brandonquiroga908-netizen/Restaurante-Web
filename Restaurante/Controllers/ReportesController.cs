@@ -85,6 +85,7 @@ namespace Restaurante.Controllers
 
             var consulta = _context.Pedidos
                 .Include(p => p.Mesa)
+                .Include(p => p.Cliente)
                 .Include(p => p.Detalles)
                 .Where(p => p.Fecha >= rango.Desde && p.Fecha < rango.HastaExclusivo);
 

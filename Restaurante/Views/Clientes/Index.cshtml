@@ -104,15 +104,29 @@
         <div>
             <h1>Clientes</h1>
             <p class="clientes-subtitulo">
-                Consulta el listado de clientes del restaurante.
+                Consulta y registra los clientes guardados en la base de datos.
             </p>
         </div>
 
-        <span class="clientes-total">
+        <div class="d-flex align-items-center gap-3">
+            <a href="@Url.Action("Crear", "Clientes")" class="btn btn-warning fw-semibold">
+                Nuevo cliente
+            </a>
+            <span class="clientes-total">
             @Model.TotalClientes
             @(string.IsNullOrEmpty(Model.Busqueda) ? "clientes" : "resultados")
-        </span>
+            </span>
+        </div>
     </div>
+
+    @if (TempData["Mensaje"] is string mensaje)
+    {
+        <div class="alert alert-success">@mensaje</div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
 
     <section class="clientes-panel" aria-label="Listado de clientes">
         <div class="clientes-buscador">
@@ -128,7 +142,7 @@
                                name="busqueda"
                                value="@Model.Busqueda"
                                class="form-control"
-                               placeholder="Buscar por nombre o apellido" />
+                               placeholder="Buscar por nombre, apellido o dirección" />
                     </div>
 
                     <div class="col-auto">
@@ -158,6 +172,7 @@
                         <th scope="col">Nombre</th>
                         <th scope="col">Apellido</th>
                         <th scope="col">Teléfono</th>
+                        <th scope="col">Dirección</th>
                         <th scope="col">Correo</th>
                         <th scope="col" class="text-end">Acciones</th>
                     </tr>
@@ -167,7 +182,7 @@
                     @if (Model.Clientes.Count == 0)
                     {
                         <tr>
-                            <td colspan="6" class="clientes-vacio">
+                            <td colspan="7" class="clientes-vacio">
                                 <span class="clientes-vacio-icono"
                                       aria-hidden="true">♙</span>
 
@@ -189,29 +204,24 @@
                         @foreach (var cliente in Model.Clientes)
                         {
                             <tr>
-                                <td>@cliente.Id</td>
+                                <td>@cliente.ID_Cliente</td>
                                 <td>@cliente.Nombre</td>
                                 <td>@cliente.Apellido</td>
                                 <td>@cliente.Telefono</td>
+                                <td>@cliente.Direccion</td>
                                 <td>@cliente.Correo</td>
                                 <td class="text-end text-nowrap">
-                                    @if (TempData["Mensaje"] is string mensaje)
-                                    {
-                                        <span class="text-success me-2">
-                                            @mensaje
-                                        </span>
-                                    }
-                                    <a href="@Url.Action("Editar", "Clientes", new { id = cliente.Id })"
+                                    <a href="@Url.Action("Editar", "Clientes", new { id = cliente.ID_Cliente })"
                                        class="btn btn-sm btn-outline-primary">
                                         Editar
                                     </a>
 
-                                    <a href="@Url.Action("Detalles", "Clientes", new { id = cliente.Id })"
+                                    <a href="@Url.Action("Detalles", "Clientes", new { id = cliente.ID_Cliente })"
                                        class="btn btn-sm btn-outline-secondary">
                                         Detalles
                                     </a>
 
-                                    <a href="@Url.Action("Eliminar", "Clientes", new { id = cliente.Id })"
+                                    <a href="@Url.Action("Eliminar", "Clientes", new { id = cliente.ID_Cliente })"
                                        class="btn btn-sm btn-outline-danger">
                                         Eliminar
                                     </a>

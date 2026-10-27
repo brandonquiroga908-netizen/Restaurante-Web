@@ -15,6 +15,7 @@ namespace Restaurante.Data
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Mesa> Mesas { get; set; }
+        public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<DetallePedido> DetallesPedido { get; set; }
 
@@ -32,6 +33,13 @@ namespace Restaurante.Data
                 .HasOne(p => p.Mesa)
                 .WithMany(m => m.Pedidos)
                 .HasForeignKey(p => p.ID_Mesa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Un cliente con pedidos no se puede borrar
+            modelBuilder.Entity<Pedido>()
+                .HasOne(p => p.Cliente)
+                .WithMany(c => c.Pedidos)
+                .HasForeignKey(p => p.ID_Cliente)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Al borrar un pedido se borran sus detalles

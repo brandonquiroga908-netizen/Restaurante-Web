@@ -67,7 +67,7 @@
                                     <td class="fw-semibold">#@pedido.ID_Pedido</td>
                                     <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>Mesa @pedido.Mesa?.Numero</td>
-                                    <td>@(pedido.Cliente ?? "Sin cliente")</td>
+                                    <td>@(pedido.Cliente?.NombreCompleto ?? "Sin cliente")</td>
                                     <td>@pedido.Detalles.Sum(d => d.Cantidad)</td>
                                     <td class="fw-semibold">Bs @pedido.Total.ToString("N2")</td>
                                     <td><partial name="_EstadoBadge" model="pedido.Estado" /></td>

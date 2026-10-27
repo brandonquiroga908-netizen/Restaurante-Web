@@ -27,9 +27,11 @@ namespace Restaurante.Models
         [ForeignKey(nameof(ID_Mesa))]
         public Mesa? Mesa { get; set; }
 
-        [StringLength(150)]
         [Display(Name = "Cliente")]
-        public string? Cliente { get; set; }
+        public int? ID_Cliente { get; set; }
+
+        [ForeignKey(nameof(ID_Cliente))]
+        public Cliente? Cliente { get; set; }
 
         [StringLength(250)]
         [Display(Name = "Observación")]
