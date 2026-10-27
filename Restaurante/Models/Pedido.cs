@@ -1,3 +1,6 @@
+
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,8 +9,10 @@ namespace Restaurante.Models
     public enum EstadoPedido
     {
         Pendiente = 0,
+
         [Display(Name = "En preparación")]
         EnPreparacion = 1,
+
         Entregado = 2,
         Cancelado = 3
     }
@@ -27,19 +32,12 @@ namespace Restaurante.Models
         [ForeignKey(nameof(ID_Mesa))]
         public Mesa? Mesa { get; set; }
 
-// Empleado que atiende el pedido
-[Display(Name = "Empleado")]
-public int? ID_Empleado { get; set; }
+        [Display(Name = "Empleado")]
+        public int? ID_Empleado { get; set; }
 
-[ForeignKey(nameof(ID_Empleado))]
-public Empleado? Empleado { get; set; }
+        [ForeignKey(nameof(ID_Empleado))]
+        public Empleado? Empleado { get; set; }
 
-// Cliente asociado al pedido
-[Display(Name = "Cliente")]
-public int? ID_Cliente { get; set; }
-
-[ForeignKey(nameof(ID_Cliente))]
-public Cliente? Cliente { get; set; }
         [Display(Name = "Cliente")]
         public int? ID_Cliente { get; set; }
 
@@ -57,6 +55,7 @@ public Cliente? Cliente { get; set; }
         [Display(Name = "Total (Bs)")]
         public decimal Total { get; set; }
 
-        public ICollection<DetallePedido> Detalles { get; set; } = new List<DetallePedido>();
+        public ICollection<DetallePedido> Detalles { get; set; }
+            = new List<DetallePedido>();
     }
 }

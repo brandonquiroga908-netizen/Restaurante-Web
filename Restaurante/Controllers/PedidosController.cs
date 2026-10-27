@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Restaurante.Data;
@@ -155,6 +155,12 @@ namespace Restaurante.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CambiarEstado(int id, EstadoPedido estado)
         {
+            await using var facturaTx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+            if (await _context.Facturas.AnyAsync(f => f.ID_Pedido == id))
+            {
+                TempData["Error"] = "El pedido tiene una factura y no se puede modificar ni eliminar.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
             var pedido = await _context.Pedidos
                 .Include(p => p.Mesa)
                 .FirstOrDefaultAsync(p => p.ID_Pedido == id);
@@ -174,6 +180,7 @@ namespace Restaurante.Controllers
                 await LiberarMesaSiCorresponde(pedido);
 
             await _context.SaveChangesAsync();
+                await facturaTx.CommitAsync();
 
             TempData["Mensaje"] = $"Pedido #{pedido.ID_Pedido} marcado como \"{estado.NombreVisible()}\".";
             return RedirectToAction(nameof(Details), new { id });
@@ -199,6 +206,12 @@ namespace Restaurante.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            await using var facturaTx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+            if (await _context.Facturas.AnyAsync(f => f.ID_Pedido == id))
+            {
+                TempData["Error"] = "El pedido tiene una factura y no se puede modificar ni eliminar.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
             var pedido = await _context.Pedidos
                 .Include(p => p.Mesa)
                 .FirstOrDefaultAsync(p => p.ID_Pedido == id);
@@ -213,6 +226,7 @@ namespace Restaurante.Controllers
 
                 _context.Pedidos.Remove(pedido);
                 await _context.SaveChangesAsync();
+                await facturaTx.CommitAsync();
 
                 TempData["Mensaje"] = $"Pedido #{id} eliminado.";
             }

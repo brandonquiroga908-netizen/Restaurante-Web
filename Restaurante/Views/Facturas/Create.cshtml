@@ -1,0 +1,15 @@
+@model Restaurante.ViewModels.NuevaFacturaViewModel
+@{ ViewData["Title"] = "Nueva factura"; }
+<link rel="stylesheet" href="~/css/facturas.css" asp-append-version="true" />
+<section class="facturas"><div class="dashboard-heading"><div><h1>Nueva factura</h1><p>Selecciona un pedido y revisa los importes antes de emitir.</p></div><a asp-action="Index" class="btn btn-outline-secondary">Volver</a></div>
+<div asp-validation-summary="All" class="alert alert-danger"></div>
+@if (!Model.Tasa.HasValue) { <div class="alert alert-warning">La tasa de impuestos está pendiente de configuración. No se pueden emitir facturas hasta definir Facturacion:TasaImpuesto.</div> }
+<div class="factura-panel p-4 mb-4"><form method="get" asp-action="Create" class="row g-3 align-items-end"><div class="col-md-9"><label for="pedidoId" class="form-label">Pedido disponible</label><select id="pedidoId" name="pedidoId" class="form-select" required><option value="">Selecciona un pedido</option>@foreach (var p in Model.Pedidos) { <option value="@p.Value" selected="@(p.Value == Model.ID_Pedido.ToString())">@p.Text</option> }</select></div><div class="col-md-3"><button class="btn factura-primary">Cargar pedido</button></div></form>
+@if (Model.Pedidos.Count == 0) { <p class="mt-3 mb-0">No hay pedidos disponibles para facturar.</p> }</div>
+@if (Model.Pedido != null) {
+<div class="factura-panel p-4"><h2 class="h5">Pedido #@Model.ID_Pedido</h2><p><strong>Cliente:</strong> @(Model.Pedido.Cliente?.NombreCompleto ?? "Sin cliente asociado")<br /><strong>Empleado:</strong> @(Model.Pedido.Empleado == null ? "Sin empleado asociado" : Model.Pedido.Empleado.Nombre + " " + Model.Pedido.Empleado.Apellido)</p>
+<div class="table-responsive"><table class="table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead><tbody>@foreach (var d in Model.Pedido.Detalles) { <tr><td>@d.Producto?.Nombre</td><td>@d.Cantidad</td><td>Bs @d.PrecioUnitario.ToString("N2")</td><td>Bs @d.Subtotal.ToString("N2")</td></tr> }</tbody></table></div>
+<div class="text-end mb-4"><p>Subtotal: Bs @Model.Subtotal.ToString("N2")</p><p>Impuestos: @(Model.Tasa.HasValue ? $"Bs {Model.Impuestos:N2} ({Model.Tasa:P2})" : "Pendientes de configurar")</p><strong>Total: @(Model.Tasa.HasValue ? $"Bs {Model.Total:N2}" : "Pendiente")</strong></div>
+<form method="post" asp-action="Create"><input asp-for="ID_Pedido" type="hidden" /><label asp-for="MetodoPago" class="form-label">Método de pago</label><select asp-for="MetodoPago" asp-items="Html.GetEnumSelectList<MetodoPagoFactura>()" class="form-select mb-2" required><option value="">Selecciona un método</option></select><span asp-validation-for="MetodoPago" class="text-danger"></span><p class="text-muted mt-3">Se guardará como pendiente. Los importes se verifican nuevamente al guardar.</p><button class="btn factura-primary" disabled="@(!Model.Tasa.HasValue)">Generar factura</button></form></div>
+}</section>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

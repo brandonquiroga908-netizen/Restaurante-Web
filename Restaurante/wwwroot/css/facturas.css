@@ -1,0 +1,24 @@
+.facturas .factura-primary { background:var(--olive-gold); color:var(--olive-white); border-color:var(--olive-gold); }
+.facturas .factura-primary:hover { background:var(--olive-dark); color:var(--olive-white); }
+.factura-panel,.factura-card { background:var(--olive-white); border:1px solid var(--olive-border); border-radius:12px; }
+.factura-panel { overflow:hidden; }
+.factura-card { padding:24px; height:100%; }
+.factura-card span,.factura-card small { display:block; color:var(--olive-muted); font-size:13px; }
+.factura-card strong { display:block; font-size:28px; color:var(--olive-gold); margin:12px 0; }
+.facturas .table th { background:var(--olive-dark); color:var(--olive-cream); font-weight:600; white-space:nowrap; padding:15px; }
+.facturas .table td { padding:15px; border-color:var(--olive-border); }
+.facturas .form-control:focus,.facturas .form-select:focus { border-color:var(--olive-gold); box-shadow:0 0 0 3px var(--olive-cream); }
+.factura-estado { display:inline-block; padding:5px 12px; background:var(--olive-cream); color:var(--olive-gold); border-radius:20px; font-size:12px; font-weight:700; }
+.factura-marca { color:var(--olive-gold); letter-spacing:2px; font-weight:700; }
+@media print {
+    .sidebar,.topbar,.admin-footer,.no-print { display:none!important; }
+    .admin-main { margin:0!important; }
+    .admin-content { padding:0!important; }
+    body,.factura-panel { background:white!important; color:black!important; }
+    .factura-panel { border:0; padding:0!important; overflow:visible; }
+    .table-responsive { overflow:visible; }
+    thead { display:table-header-group; }
+    tr { break-inside:avoid; }
+    .facturas .table th { color:black!important; background:white!important; border-bottom:1px solid black; }
+    @page { margin:15mm; }
+}

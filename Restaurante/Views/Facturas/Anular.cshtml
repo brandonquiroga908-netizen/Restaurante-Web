@@ -1,0 +1,9 @@
+@model Restaurante.Models.Factura
+@{ ViewData["Title"] = "Anular factura"; }
+<link rel="stylesheet" href="~/css/facturas.css" asp-append-version="true" />
+<section class="facturas factura-panel p-4"><h1 class="h3">Anular factura #@Model.ID_Factura</h1>
+@if (Model.Estado == EstadoFactura.Pendiente) {
+<p>¿Confirmas la anulación de esta factura por <strong>Bs @Model.Total.ToString("N2")</strong>?</p><p>Se conservará el documento. El pedido #@Model.ID_Pedido no cambiará de estado ni podrá volver a facturarse.</p>
+<form asp-action="Anular" asp-route-id="@Model.ID_Factura" method="post"><button class="btn btn-danger">Confirmar anulación</button><a asp-action="Details" asp-route-id="@Model.ID_Factura" class="btn btn-outline-secondary">Volver</a></form>
+} else { <p>Solo se pueden anular facturas pendientes. Una factura pagada requiere un procedimiento autorizado.</p><a asp-action="Details" asp-route-id="@Model.ID_Factura">Volver a la factura</a> }
+</section>

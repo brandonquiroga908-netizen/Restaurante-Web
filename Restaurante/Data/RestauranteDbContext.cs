@@ -7,6 +7,7 @@ namespace Restaurante.Data
     {
         public RestauranteDbContext(DbContextOptions<RestauranteDbContext> options) : base(options) { }
 
+        public DbSet<Factura> Facturas { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Mesa> Mesas { get; set; }
@@ -18,6 +19,16 @@ namespace Restaurante.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Factura>().HasOne(f => f.Pedido).WithOne()
+                .HasForeignKey<Factura>(f => f.ID_Pedido).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Factura>().HasIndex(f => f.ID_Pedido).IsUnique();
+            modelBuilder.Entity<Factura>().Property(f => f.Estado).HasConversion<string>().HasMaxLength(20);
+            modelBuilder.Entity<Factura>().Property(f => f.MetodoPago).HasConversion<string>().HasMaxLength(20);
+            modelBuilder.Entity<Factura>().ToTable("Facturas", t => {
+                t.HasCheckConstraint("CK_Facturas_Importes", "[Subtotal] >= 0 AND [Impuestos] >= 0 AND [Total] = [Subtotal] + [Impuestos]");
+                t.HasCheckConstraint("CK_Facturas_Estado", "[Estado] IN ('Pendiente','Pagada','Anulada')");
+                t.HasCheckConstraint("CK_Facturas_MetodoPago", "[MetodoPago] IN ('Efectivo','Tarjeta','Transferencia','QR')");
+            });
             modelBuilder.Entity<Mesa>()
                 .HasIndex(m => m.Numero).IsUnique();
 

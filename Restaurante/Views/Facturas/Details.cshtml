@@ -1,0 +1,16 @@
+@model Restaurante.ViewModels.FacturaDetalleViewModel
+@{ ViewData["Title"] = $"Factura #{Model.Factura.ID_Factura}"; var f = Model.Factura; }
+<link rel="stylesheet" href="~/css/facturas.css" asp-append-version="true" />
+<section class="facturas" data-imprimir="@(ViewBag.Imprimir == true ? "true" : "false")">
+<div class="no-print mb-4 d-flex gap-2 flex-wrap"><a asp-action="Index" class="btn btn-outline-secondary">Volver a facturas</a><button type="button" id="imprimir-factura" class="btn factura-primary"><i class="bi bi-printer"></i> Imprimir</button>
+@if (f.Estado == EstadoFactura.Pendiente) { <form asp-action="Pagar" asp-route-id="@f.ID_Factura" method="post"><button class="btn factura-primary">Marcar como pagada</button></form><a asp-action="Anular" asp-route-id="@f.ID_Factura" class="btn btn-outline-danger">Anular</a> }
+</div>
+@if (TempData["Mensaje"] != null) { <div class="alert alert-success no-print">@TempData["Mensaje"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger no-print">@TempData["Error"]</div> }
+<article class="factura-panel p-4 p-lg-5"><div class="d-flex justify-content-between gap-3 mb-4"><div><p class="factura-marca">RESTAURANTE ISI</p><h1>Factura #@f.ID_Factura</h1></div><div class="text-end"><span class="factura-estado">@f.Estado</span><p class="mt-3">@f.Fecha.ToString("dd/MM/yyyy HH:mm")</p></div></div>
+<div class="row mb-4"><div class="col-sm-6"><p><strong>Cliente</strong><br />@Model.Datos.Cliente</p><p><strong>Atendido por</strong><br />@Model.Datos.Empleado</p></div><div class="col-sm-6"><p><strong>Pedido:</strong> #@f.ID_Pedido</p><p><strong>Método de pago:</strong> @f.MetodoPago</p></div></div>
+<div class="table-responsive"><table class="table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead><tbody>@foreach (var d in Model.Datos.Lineas) { <tr><td>@d.Producto</td><td>@d.Cantidad</td><td>Bs @d.PrecioUnitario.ToString("N2")</td><td>Bs @d.Subtotal.ToString("N2")</td></tr> }</tbody></table></div>
+<div class="text-end mt-4"><p>Subtotal: Bs @f.Subtotal.ToString("N2")</p><p>Impuestos: Bs @f.Impuestos.ToString("N2")</p><h2 class="h4">Total: Bs @f.Total.ToString("N2")</h2></div>
+@if (f.Estado == EstadoFactura.Anulada) { <p class="border-top pt-3 mt-4 fw-bold">ANULADA · Documento conservado para consulta.</p> }
+</article></section>
+@section Scripts { <script src="~/js/facturas.js" asp-append-version="true"></script> }
